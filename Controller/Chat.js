@@ -25,13 +25,14 @@ const sendMessage = async (req, res) => {
 
         await chatMessage.save();
 
-        // Fetching all messages between the sender and receiver
-        const chatHistory = await Chat.find({
-            $or: [
-                { senderId: userId, receiverId },
-                { senderId: receiverId, receiverId: userId }
-            ]
-        }).sort({ createdAt: 1 }); // Sorting by creation time
+            // Fetching all messages between the sender and receiver
+const chatHistory = await Chat.find({
+    $or: [
+        { senderId: userId, receiverId },
+        { senderId: receiverId, receiverId: userId }
+    ]
+}).select('senderName message createdAt -_id') // Exclude _id field
+  .sort({ createdAt: 1 }); // Sorting by creation time
 
         res.status(201).json(chatHistory);
     } catch (error) {

@@ -39,6 +39,5 @@ router.delete('/delete-project/:projectId', ProjectController.DeleteProjectById)
 router.get('/allnotifications', Notifications.getNotifications);
 //send message
 router.post('/sendmessage/:receiverId', Chat.sendMessage);
-//get all message
-//router.get('/getmessage',Chat.getMessages);
+
 module.exports = router;
