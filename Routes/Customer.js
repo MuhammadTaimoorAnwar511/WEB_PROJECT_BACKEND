@@ -3,10 +3,12 @@ const router = express.Router();
 const ClientController = require('../Controller/Authentication'); 
 const ClientProfile  = require('../Controller/Profile'); 
 const ClientSearchController = require('../Controller/Search'); 
+const SellerSearchController = require('../Controller/SellerSearch'); 
 const Topup = require('../Controller/Topup'); // Import the BalanceController
 const ProjectController = require('../Controller/Project'); // Import the ProjectController
 const Notifications =require('../Controller/Notification')
 const Chat=require('../Controller/Chat')
+
 // Register route
 router.post('/register', ClientController.register);
 // Login route
@@ -45,5 +47,10 @@ router.get('/allnotifications', Notifications.getNotifications);
 router.post('/sendmessage/:receiverId', Chat.sendMessage);
 // Rate Freelancer route
 router.post('/rate-freelancer/:freelancerId', ClientSearchController.rateFreelancer);
-
+// Search SELLER by Name route
+router.get('/search-seller', SellerSearchController.searchSeller);
+// Search ALL SELLER
+router.get('/search-allseller', SellerSearchController.searchAllSeller);
+//rate project
+//router.put("/addReview/:id", AuthenticateUser, addReviewById);
 module.exports = router;

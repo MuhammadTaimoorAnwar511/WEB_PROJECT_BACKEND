@@ -28,6 +28,13 @@ exports.topUpBalance = async (req, res) => {
             timestamp: timestamp
         });
 
+        // Add a notification for the top-up
+        const notificationMessage = `YOU HAVE TOPUP ${topUpAmount} RS }`;
+        user.Notifications.push({
+        message: notificationMessage,
+        createdAt: timestamp
+        });
+
         await user.save();
 
         res.status(200).json({ message: 'Balance topped up successfully', newBalance: user.AccountBalance });
@@ -39,7 +46,6 @@ exports.topUpBalance = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 
 // Get top-up balance history of the user
 exports.getTopUpHistory = async (req, res) => {

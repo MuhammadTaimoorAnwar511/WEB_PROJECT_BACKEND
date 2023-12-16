@@ -7,7 +7,7 @@ const sampleprojects = new mongoose.Schema({
     Description:String,
     Technologies:[String],
   });
-const userSchema = mongoose.Schema({
+const FreelanceSchema = mongoose.Schema({
     FullName :String,
     Email:String,
     TotalRating:Number,
@@ -30,7 +30,7 @@ const userSchema = mongoose.Schema({
     RivisionCost:Number,
     Samples:[sampleprojects]
 },{timestamps:true})
-const model = mongoose.model("Freelance" , userSchema);
+const model = mongoose.model("Freelance" , FreelanceSchema);
 module.exports = model;
 
 

@@ -80,6 +80,7 @@ const searchFreelancers = async (req, res) => {
         res.status(500).send({ message: "Error occurred while searching for freelancers", error: error.message });
     }
 };
+
 // Controller function to rate a freelancer
 const rateFreelancer = async (req, res) => {
     try {
