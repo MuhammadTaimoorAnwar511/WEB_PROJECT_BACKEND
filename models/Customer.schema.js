@@ -16,7 +16,23 @@ const userSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    Notifications:[String],
+    //Notifications:[String],
+    Notifications: [{
+        message: String,
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    TopupHistory: [
+        {
+            amount: Number,
+            timestamp: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
 }, { timestamps: true });
 
 const model = mongoose.model("Customer", userSchema);

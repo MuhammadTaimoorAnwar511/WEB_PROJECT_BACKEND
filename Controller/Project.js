@@ -65,7 +65,10 @@ const CreateProject = async (req, res) => {
 
         // Send notification to the assigned freelancer
         const notificationMessage = `${Username} HAS ASSIGNED YOU PROJECT ${Title} `;
-        assignedFreelancer.Notifications.push(notificationMessage);
+        assignedFreelancer.Notifications.push({
+            message: notificationMessage,
+            createdAt: new Date()
+        });
         await assignedFreelancer.save();
 
         // Return the created project details in the JSON response
@@ -96,7 +99,6 @@ const CreateProject = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 // FETCH ALL PROJECTS OF A USER
 const FetchUserAllProjects = async (req, res) => {
     try {
@@ -105,8 +107,14 @@ const FetchUserAllProjects = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         // Fetching projects for the decoded userId
-        const userProjects = await Projects.find({ UserId: decoded.userId })
-        .sort({ createdAt: -1 }); 
+       // const userProjects = await Projects.find({ UserId: decoded.userId })
+       // .sort({ createdAt: -1 }); 
+
+                // Fetching projects for the decoded userId excluding projects with Status DELIVERED
+        const userProjects = await Projects.find({
+        UserId: decoded.userId,
+        Status: { $ne: 'DELIVERED' } // Exclude projects with Status DELIVERED
+        }).sort({ createdAt: -1 });
 
         // Check if projects exist
         if (!userProjects || userProjects.length === 0) {
@@ -118,12 +126,12 @@ const FetchUserAllProjects = async (req, res) => {
             message: 'Projects fetched successfully',
             projects: userProjects
         });
+        
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 // FETCH PROJECTS BY STATUS
 const FilterProjectsByStatus = async (req, res) => {
     try {
@@ -151,7 +159,6 @@ const FilterProjectsByStatus = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 // FETCH PROJECT BY ID
 const FetchProjectById = async (req, res) => {
     try {
@@ -181,9 +188,6 @@ const FetchProjectById = async (req, res) => {
     }
 };
 // EDIT PROJECT BY ID
-
-
-
 const EditProjectById = async (req, res) => {
     try {
         // Extracting project ID from request parameters
@@ -291,5 +295,33 @@ const DeleteProjectById = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+// FETCH DELIVERED PROJECTS
+const FetchDeliveredProjects = async (req, res) => {
+    try {
+        // Decoding token from the request header
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-module.exports = { CreateProject, FetchUserAllProjects, FilterProjectsByStatus, FetchProjectById, EditProjectById, DeleteProjectById };
+        // Fetching delivered projects for the decoded userId
+        const deliveredProjects = await Projects.find({
+            UserId: decoded.userId,
+            Status: 'DELIVERED'
+        }).sort({ createdAt: -1 });
+
+        // Check if delivered projects exist
+        if (!deliveredProjects || deliveredProjects.length === 0) {
+            return res.status(404).json({ message: 'No delivered projects found for this user.' });
+        }
+
+        // Return the delivered projects in the JSON response
+        res.status(200).json({
+            message: 'Delivered projects fetched successfully',
+            projects: deliveredProjects
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+module.exports = { CreateProject, FetchUserAllProjects, FilterProjectsByStatus, FetchProjectById, EditProjectById, DeleteProjectById,FetchDeliveredProjects };

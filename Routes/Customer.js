@@ -23,12 +23,16 @@ router.get('/search-allfreelancers', ClientSearchController.searchAllFreelancers
 router.get('/search-freelancers', ClientSearchController.searchFreelancersBySpecialities);
 // Top-up balance route
 router.post('/topup-balance', Topup.topUpBalance);
+//Top-up History
+router.get('/topup-balance-history', Topup.getTopUpHistory);
 // Create Project route
 router.post('/create-project', ProjectController.CreateProject);
 // get allProjects of SPECIFIC USER  route
 router.get('/allprojects', ProjectController.FetchUserAllProjects);
 // get allProjects of SPECIFIC USER  based on status route
 router.get('/projects/filter', ProjectController.FilterProjectsByStatus);
+// COMPLETED HISTORY
+router.get('/projects/deliveredhistory', ProjectController.FetchDeliveredProjects);
 // SEARCH  PROJECT BY ID  
 router.get('/projectid/:projectId', ProjectController.FetchProjectById);
 //EDIT PROJECT BASED ON ID 
@@ -39,5 +43,7 @@ router.delete('/delete-project/:projectId', ProjectController.DeleteProjectById)
 router.get('/allnotifications', Notifications.getNotifications);
 //send message
 router.post('/sendmessage/:receiverId', Chat.sendMessage);
+// Rate Freelancer route
+router.post('/rate-freelancer/:freelancerId', ClientSearchController.rateFreelancer);
 
 module.exports = router;

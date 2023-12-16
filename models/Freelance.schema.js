@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema({
     FullName :String,
     Email:String,
     TotalRating:Number,
+    AvgRating: Number,
     TotalNumberofFeddbacks:Number,
     Password:String,
     Blocked:Boolean,
@@ -18,15 +19,33 @@ const userSchema = mongoose.Schema({
     Specialities:[String],
     AccountBalance:Number,
     FreeRivisions:Number,
-    Notifications:[String],
-    RivisionCost:Number,//After free done
+    //Notifications:[String],
+    Notifications: [{
+      message: String,
+      createdAt: {
+          type: Date,
+          default: Date.now
+      }
+  }],
+    RivisionCost:Number,
     Samples:[sampleprojects]
 },{timestamps:true})
 const model = mongoose.model("Freelance" , userSchema);
 module.exports = model;
 
-// const mongoose = require("mongoose")
 
+
+
+
+
+
+
+
+
+
+
+
+// const mongoose = require("mongoose")
 // const sapmleprojects = new mongoose.Schema({
 //     Title: String,
 //     ImageUrl:[String],

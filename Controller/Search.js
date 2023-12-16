@@ -1,4 +1,4 @@
-const Freelance = require('../models/Freelance.schema'); // Replace with the correct path to your model
+const Freelance = require('../models/Freelance.schema'); 
 
 // Controller function to search all freelancers
 const searchAllFreelancers = async (req, res) => {
@@ -80,5 +80,60 @@ const searchFreelancers = async (req, res) => {
         res.status(500).send({ message: "Error occurred while searching for freelancers", error: error.message });
     }
 };
+// Controller function to rate a freelancer
+const rateFreelancer = async (req, res) => {
+    try {
+        const freelancerId = req.params.freelancerId; // Use req.params.freelancerId
+       // console.log('Received freelancerId:', freelancerId); // Log the received ID
 
-module.exports = { searchFreelancers, searchAllFreelancers, searchFreelancersBySpecialities };
+        const { rating } = req.body;
+       // console.log('Received rating:', rating);
+
+        // Validate the rating
+        if (!rating || rating < 1 || rating > 5) {
+            return res.status(400).send({ message: "Invalid rating. Rating must be between 1 and 5." });
+        }
+
+        // Find the freelancer by ID
+        const freelancer = await Freelance.findById(freelancerId);
+       
+        const isValidNumber = (value) => !isNaN(value) && typeof value === 'number';
+
+        // Inside your rateFreelancer function
+        if (!isValidNumber(freelancer.TotalRating)) {
+            freelancer.TotalRating = 0; // Set a default value or handle it as needed
+        }
+        
+        if (!isValidNumber(freelancer.TotalNumberofFeddbacks)) {
+            freelancer.TotalNumberofFeddbacks = 0; // Set a default value or handle it as needed
+        }
+        
+        if (!isValidNumber(freelancer.AvgRating)) {
+            freelancer.AvgRating = 0; // Set a default value or handle it as needed
+        }
+        
+        // Check if the freelancer exists
+        if (!freelancer) {
+            return res.status(404).send({ message: "Freelancer not found" });
+        }
+
+        // Update the total rating and total number of feedbacks
+        freelancer.TotalRating += rating;
+        freelancer.TotalNumberofFeddbacks += 1;
+
+        // Calculate the average rating
+        freelancer.AvgRating = freelancer.TotalRating / freelancer.TotalNumberofFeddbacks;
+        
+        // Save the updated freelancer
+        await freelancer.save();
+
+        res.status(200).json({ message: "Freelancer rated successfully", avgRating: freelancer.AvgRating });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+
+
+module.exports = { searchFreelancers, searchAllFreelancers, searchFreelancersBySpecialities, rateFreelancer };
