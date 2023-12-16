@@ -4,10 +4,11 @@ const ClientController = require('../Controller/Authentication');
 const ClientProfile  = require('../Controller/Profile'); 
 const ClientSearchController = require('../Controller/Search'); 
 const SellerSearchController = require('../Controller/SellerSearch'); 
-const Topup = require('../Controller/Topup'); // Import the BalanceController
-const ProjectController = require('../Controller/Project'); // Import the ProjectController
+const Topup = require('../Controller/Topup'); 
+const ProjectController = require('../Controller/Project'); 
 const Notifications =require('../Controller/Notification')
 const Chat=require('../Controller/Chat')
+const ReviewProject=require('../Controller/ReviewProject')
 
 // Register route
 router.post('/register', ClientController.register);
@@ -43,8 +44,10 @@ router.patch('/edit-project/:projectId', ProjectController.EditProjectById);
 router.delete('/delete-project/:projectId', ProjectController.DeleteProjectById);
 //get all notification
 router.get('/allnotifications', Notifications.getNotifications);
-//send message
+//send messageto freelance
 router.post('/sendmessage/:receiverId', Chat.sendMessage);
+//send message TO SELLER
+router.post('/sendmessage-seller/:receiverId', Chat.sendMessage);
 // Rate Freelancer route
 router.post('/rate-freelancer/:freelancerId', ClientSearchController.rateFreelancer);
 // Search SELLER by Name route
@@ -52,5 +55,6 @@ router.get('/search-seller', SellerSearchController.searchSeller);
 // Search ALL SELLER
 router.get('/search-allseller', SellerSearchController.searchAllSeller);
 //rate project
-//router.put("/addReview/:id", AuthenticateUser, addReviewById);
+router.put("/addReview/:id", ReviewProject.addReviewById);
+
 module.exports = router;
