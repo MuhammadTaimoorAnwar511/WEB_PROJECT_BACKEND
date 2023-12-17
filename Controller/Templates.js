@@ -1,4 +1,7 @@
+const jwt = require('jsonwebtoken');
 const SellerProjects = require('../models/SellerProjects.schema');
+const Buyer =require('../models/Customer.schema');
+const Seller =require('../models/Seller.schema');
 
 const getallsellerprojects = async (req, res) => {
     try {
@@ -92,4 +95,143 @@ const getprojectsbytitle = async (req, res) => {
   }
 };
 
-module.exports = { getallsellerprojects,getallprojectsofspecificsellerbyid, getprojectofsellerbyprojectid, getprojectsbytitle };
+// const buysellerProjectById = async (req, res) => {
+//   try {
+//     const { projectId } = req.params;
+
+//     // Decoding token from the request header
+//     const token = req.headers.authorization.split(' ')[1];
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     const buyerId = decoded.userId; 
+
+//     // Fetch the specific project by projectId from the database
+//     const project = await SellerProjects.findById(projectId);
+
+//     // Check if the project with the specified projectId exists
+//     if (!project) {
+//       return res.status(404).json({ message: 'No project found for the specified projectId' });
+//     }
+
+//     // Check if the buyer has already purchased the project
+//     if (project.Buyer.includes(buyerId)) {
+//       return res.status(400).json({ message: 'Buyer has already purchased this project' });
+//     }
+
+//     // Fetch buyer's account balance
+//     const buyer = await Buyer.findById(buyerId);
+//     const buyerBalance = buyer.AccountBalance;
+
+//     // Check if buyer has enough balance to make the purchase
+//     if (buyerBalance < project.Price) {
+//       return res.status(400).json({ message: 'Insufficient balance. Please top up your account.' });
+//     }
+
+//     // Deduct amount from buyer's account balance
+//     buyer.AccountBalance -= project.Price;
+//     await buyer.save();
+
+//     // Add amount to seller's account balance
+//     const seller = await Seller.findById(project.sellerId);
+//     seller.AccountBalance += project.Price;
+//     await seller.save();
+
+//     // Perform the purchase logic (you can update project, buyer details, etc.)
+//     project.Buyer.push(buyerId);
+//     project.Sales += 1;
+//     project.Revenue += project.Price;
+
+//     // Save the updated project to the database
+//     const updatedProject = await project.save();
+
+//     // If the project is successfully purchased, return the updated project
+//     res.status(200).json(updatedProject);
+//   } catch (error) {
+//     // Handle errors
+//     console.error('Error purchasing the project:', error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// };
+
+const buysellerProjectById = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    // Decoding token from the request header
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const buyerId = decoded.userId;
+    const buyerFullName = decoded.FullName; // Assuming the buyer's full name is stored in the token
+
+    // Fetch the specific project by projectId from the database
+    const project = await SellerProjects.findById(projectId);
+
+    // Check if the project with the specified projectId exists
+    if (!project) {
+      return res.status(404).json({ message: 'No project found for the specified projectId' });
+    }
+
+    // Check if the buyer has already purchased the project
+    if (project.Buyer.includes(buyerId)) {
+      return res.status(400).json({ message: 'Buyer has already purchased this project' });
+    }
+
+    // Fetch buyer's account balance
+    const buyer = await Buyer.findById(buyerId);
+    const buyerBalance = buyer.AccountBalance;
+
+    // Check if buyer has enough balance to make the purchase
+    if (buyerBalance < project.Price) {
+      return res.status(400).json({ message: 'Insufficient balance. Please top up your account.' });
+    }
+
+    // Deduct amount from buyer's account balance
+    buyer.AccountBalance -= project.Price;
+    await buyer.save();
+
+    // Add amount to seller's account balance
+    const seller = await Seller.findById(project.sellerId);
+    seller.AccountBalance += project.Price;
+    await seller.save();
+
+    // Perform the purchase logic (you can update project, buyer details, etc.)
+    project.Buyer.push(buyerId);
+    project.Sales += 1;
+    project.Revenue += project.Price;
+
+    // Save the updated project to the database
+    const updatedProject = await project.save();
+
+    // Send notification to the seller
+    const sellerNotification = {
+      message: `${buyerFullName} has purchased your project "${project.Title}" for ${project.Price} RS.`,
+    };
+    seller.Notifications.push(sellerNotification);
+    await seller.save();
+
+    // Send notification to the buyer
+    const buyerNotification = {
+      message: `You have successfully purchased the project "${project.Title}" for ${project.Price} RS.`,
+    };
+    buyer.Notifications.push(buyerNotification);
+
+    // Update buyer's PaymentHistory
+    const paymentHistoryEntry = {
+      message: `You purchased the project "${project.Title}" for ${project.Price} RS.`,
+      createdAt: new Date(),
+    };
+    buyer.PaymentHistory.push(paymentHistoryEntry);
+    await buyer.save();
+
+    // If the project is successfully purchased, return the updated project
+    res.status(200).json(updatedProject);
+  } catch (error) {
+    // Handle errors
+    console.error('Error purchasing the project:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+module.exports = { getallsellerprojects,getallprojectsofspecificsellerbyid, getprojectofsellerbyprojectid, getprojectsbytitle,buysellerProjectById };

@@ -29,7 +29,7 @@ const userSchema = mongoose.Schema({
     Price: { type: Number, default: 0 },
     Revenue: { type: Number, default: 0 },
     Feedbacks: { type: [reviews], default: [] },
-    Buyer: {type : [buyer], default: [] }
+    Buyer: {type : [String], default: [] }
 },{timestamps:true})
 const model = mongoose.model("SellerProjects" , userSchema);
 module.exports = model;

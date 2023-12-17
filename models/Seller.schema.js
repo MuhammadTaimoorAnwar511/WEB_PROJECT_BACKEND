@@ -10,7 +10,14 @@ const userSchema = mongoose.Schema({
     Blocked: { type: Boolean, default: false },
     Reason: { type: String, default: '' },
     Specialities: { type: [String], default: [] },
-    AccountBalance: { type: Number, default: 0 }
+    AccountBalance: { type: Number, default: 0 },       
+        Notifications: [{
+            message: String,
+            createdAt: {
+                type: Date,
+                default: Date.now
+            }
+        }],
 },{timestamps:true})
 const model = mongoose.model("Seller" , userSchema);
 module.exports = model;

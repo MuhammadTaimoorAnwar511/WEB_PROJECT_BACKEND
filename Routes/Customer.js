@@ -65,5 +65,7 @@ router.get('/sellerprojects/:sellerId', SellerProjectController.getallprojectsof
 router.get('/sellerproject/:projectId', SellerProjectController.getprojectofsellerbyprojectid);
 // Get projects by title
 router.get('/sellerprojects/title/:title', SellerProjectController.getprojectsbytitle);
+// Buy a specific project by projectId (buyer ID decoded from token)
+router.post('/buyproject/:projectId', SellerProjectController.buysellerProjectById);
 
 module.exports = router;
