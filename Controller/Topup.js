@@ -29,7 +29,7 @@ exports.topUpBalance = async (req, res) => {
         });
 
         // Add a notification for the top-up
-        const notificationMessage = `YOU HAVE TOPUP ${topUpAmount} RS }`;
+        const notificationMessage = `YOU HAVE TOPUP ${topUpAmount} RS `;
         user.Notifications.push({
         message: notificationMessage,
         createdAt: timestamp

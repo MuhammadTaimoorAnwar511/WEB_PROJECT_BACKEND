@@ -9,6 +9,7 @@ const ProjectController = require('../Controller/Project');
 const Notifications =require('../Controller/Notification')
 const Chat=require('../Controller/Chat')
 const ReviewProject=require('../Controller/ReviewProject')
+const SellerProjectController = require('../Controller/Templates');
 
 // Register route
 router.post('/register', ClientController.register);
@@ -56,5 +57,13 @@ router.get('/search-seller', SellerSearchController.searchSeller);
 router.get('/search-allseller', SellerSearchController.searchAllSeller);
 //rate project
 router.put("/addReview/:id", ReviewProject.addReviewById);
+//get all projects of all sellers
+router.get('/sellerallprojects', SellerProjectController.getallsellerprojects);
+// Get all projects of a specific seller by sellerId
+router.get('/sellerprojects/:sellerId', SellerProjectController.getallprojectsofspecificsellerbyid);
+// Get a specific project of seller by projectId
+router.get('/sellerproject/:projectId', SellerProjectController.getprojectofsellerbyprojectid);
+// Get projects by title
+router.get('/sellerprojects/title/:title', SellerProjectController.getprojectsbytitle);
 
 module.exports = router;

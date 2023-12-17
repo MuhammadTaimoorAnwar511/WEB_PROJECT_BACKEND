@@ -33,6 +33,13 @@ const CustomerSchema = mongoose.Schema({
             }
         }
     ],
+    PaymentHistory: [{
+        message: String,
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
 }, { timestamps: true });
 
 const model = mongoose.model("Customer", CustomerSchema);
