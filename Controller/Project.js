@@ -57,7 +57,7 @@ const CreateProject = async (req, res) => {
             Username,
             Assigned,
             AssignedUsername,
-            Status: 'WAITING FOR APPROVAL' // Default status
+            Status: 'WAITING FOR APPROVAL' 
         });
 
         // Save the new project
@@ -324,4 +324,33 @@ const FetchDeliveredProjects = async (req, res) => {
     }
 };
 
-module.exports = { CreateProject, FetchUserAllProjects, FilterProjectsByStatus, FetchProjectById, EditProjectById, DeleteProjectById,FetchDeliveredProjects };
+const getAllSamplesProjectsOfFreelancerByID = async (req, res) => {
+    try {
+      const freelancerId = req.params.freelancerId;
+  
+      // Fetch the freelancer by ID
+      const freelancer = await Freelancer.findById(freelancerId);
+  
+      // Check if the freelancer exists
+      if (!freelancer) {
+        return res.status(404).json({ message: 'Freelancer not found' });
+      }
+  
+      // Retrieve the samples array from the freelancer document
+      const samplesProjects = freelancer.Samples;
+  
+      // If no samples are found, return an empty array
+      if (!samplesProjects || samplesProjects.length === 0) {
+        return res.status(404).json({ message: 'No sample projects found for the freelancer' });
+      }
+  
+      // If sample projects are found, return them
+      res.status(200).json({ samplesProjects });
+    } catch (error) {
+      // Handle errors
+      console.error('Error getting sample projects:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+
+module.exports = { CreateProject, FetchUserAllProjects, FilterProjectsByStatus, FetchProjectById, EditProjectById, DeleteProjectById,FetchDeliveredProjects,getAllSamplesProjectsOfFreelancerByID };

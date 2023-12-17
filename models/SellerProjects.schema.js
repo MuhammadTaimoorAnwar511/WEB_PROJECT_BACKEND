@@ -7,10 +7,6 @@ const reviews = new mongoose.Schema({
     Rating: { type: Number, default: 0 }
 });
 
-const buyer = new mongoose.Schema({
-    buyerId : String,
-    buyerName : String
-})
 
 const userSchema = mongoose.Schema({
     sellerId:String,

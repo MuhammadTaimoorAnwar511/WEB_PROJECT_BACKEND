@@ -45,6 +45,8 @@ router.patch('/edit-project/:projectId', ProjectController.EditProjectById);
 router.delete('/delete-project/:projectId', ProjectController.DeleteProjectById);
 //get all notification
 router.get('/allnotifications', Notifications.getNotifications);
+//get all paymenthistory
+router.get('/getallPaymentHistory', Notifications.getPaymentHistory);
 //send messageto freelance
 router.post('/sendmessage/:receiverId', Chat.sendMessage);
 //send message TO SELLER
@@ -67,5 +69,9 @@ router.get('/sellerproject/:projectId', SellerProjectController.getprojectofsell
 router.get('/sellerprojects/title/:title', SellerProjectController.getprojectsbytitle);
 // Buy a specific project by projectId (buyer ID decoded from token)
 router.post('/buyproject/:projectId', SellerProjectController.buysellerProjectById);
+// Get purchased projects from seller  
+router.get('/buyerprojects', SellerProjectController.getBuyerProjects);
+// Get all sample projects of a specific freelancer by ID
+router.get('/freelancer/samples/:freelancerId', ProjectController.getAllSamplesProjectsOfFreelancerByID);
 
 module.exports = router;

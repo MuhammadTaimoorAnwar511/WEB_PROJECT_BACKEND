@@ -27,7 +27,7 @@ const responseSchema = mongoose.Schema({
     Username :String,  //User who is uploading it (Customer)
     Assigned:String,   //UserId of the freelancer to wchich project is assigned
     AssignedUsername:String,//Username of the freelancer to wchich project is assigned
-    Status:String,//WAITING FOR APPROVAL,REJECTED,WORKING,COMPLETED
+    Status:{ type: String, default: "WAITING FOR APPROVAL" },//WAITING FOR APPROVAL,REJECTED,WORKING,COMPLETED
     Paid:Number,//cost paid for project
     Tip:Number,//tip paid for project 
     PaidOnDate:String,//date
