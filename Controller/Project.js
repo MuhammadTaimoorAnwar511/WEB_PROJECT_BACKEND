@@ -34,7 +34,7 @@ const CreateProject = async (req, res) => {
         // Find the assigned freelancer's username
         const assignedFreelancer = await Freelancer.findById(Assigned);
 
-        console.log("Assigned ID:", Assigned);
+       // console.log("Assigned ID:", Assigned);
 
         if (!assignedFreelancer) {
             return res.status(404).json({ error: 'Assigned freelancer not found' });
@@ -99,7 +99,7 @@ const CreateProject = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-// FETCH ALL PROJECTS OF A USER
+// FETCH ALL PROJECTS OF A USER other than deliver
 const FetchUserAllProjects = async (req, res) => {
     try {
         // Decoding token from the request header

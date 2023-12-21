@@ -48,7 +48,7 @@ const mongoProject = require('../models/SellerProjects.schema');
 const addReviewById = async (req, res) => {
     try {
         const projectId = req.params.id;
-        console.log(projectId);
+      //  console.log(projectId);
         const { Comment, Rating } = req.body;
 
         // Token decoding logic

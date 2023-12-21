@@ -1,12 +1,6 @@
 const mongoose = require("mongoose")
 
-  const chat = new mongoose.Schema({
-    Text: String,
-    Username:String,
-    UserId:String,
-    Time:String,
-  });
-//Chat:[chat],
+
 const responseSchema = mongoose.Schema({
   projectId: 
   {

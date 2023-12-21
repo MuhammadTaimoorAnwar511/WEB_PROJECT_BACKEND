@@ -69,7 +69,7 @@ const getUserProfile = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
     try {
-        console.log("Request body:", req.body);
+       // console.log("Request body:", req.body);
 
         const token = req.headers.authorization.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -99,7 +99,7 @@ const updateUserProfile = async (req, res) => {
 
         if (isUpdated) {
             await user.save();
-            console.log("User updated:", user);
+           // console.log("User updated:", user);
             res.status(200).json({ message: "Profile updated successfully", user });
         } else {
             res.status  (200).json({ message: "No changes made to the profile", user });
@@ -109,7 +109,5 @@ const updateUserProfile = async (req, res) => {
         res.status(500).json({ message: "Error updating user profile", error: error.message });
     }
 };
-
-
 
 module.exports = { getUserProfile,updateUserProfile};

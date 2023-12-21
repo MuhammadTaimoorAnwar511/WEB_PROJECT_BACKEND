@@ -104,7 +104,7 @@ const buysellerProjectById = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const buyerId = decoded.userId;
-    const buyerFullName = decoded.FullName; // Assuming the buyer's full name is stored in the token
+    const buyerFullName = decoded.FullName;
 
     // Fetch the specific project by projectId from the database
     const project = await SellerProjects.findById(projectId);
@@ -174,7 +174,7 @@ const buysellerProjectById = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
+//get all project customer has bought
 const getBuyerProjects = async (req, res) => {
   try {
     // Decoding buyer ID from the request header
