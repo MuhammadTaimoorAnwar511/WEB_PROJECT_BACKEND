@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const reviews = new mongoose.Schema({
-    reviewerId:String,//User That has given review
+    reviewerId:String,
     reviewerName:String,
     Comment:String,
     Rating: { type: Number, default: 0 }
@@ -27,5 +27,6 @@ const userSchema = mongoose.Schema({
     Feedbacks: { type: [reviews], default: [] },
     Buyer: {type : [String], default: [] }
 },{timestamps:true})
+
 const model = mongoose.model("SellerProjects" , userSchema);
 module.exports = model;

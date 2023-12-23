@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const CustomerSchema = mongoose.Schema({
-    FullName: String,
+    FullName: {type: String},
     Email: String,
-    Role: String,
+    Role: {type: String, default:"Customer"},
     Password: String,
-    Blocked: Boolean,
+    Blocked:{ type: Boolean, default:false},
     Reason: String,
     Interests: [String],
     AccountBalance: {

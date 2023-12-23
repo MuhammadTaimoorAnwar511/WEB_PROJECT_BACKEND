@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const SellerProjects = require('../models/SellerProjects.schema');
 const Buyer =require('../models/Customer.schema');
 const Seller =require('../models/Seller.schema');
+const PurchaseSchema =require('../models/Purchases.schema');
+
 
 const getallsellerprojects = async (req, res) => {
     try {
@@ -144,7 +146,22 @@ const buysellerProjectById = async (req, res) => {
 
     // Save the updated project to the database
     const updatedProject = await project.save();
+//////
 
+    // Create a new purchase record
+    const purchaseData = {
+      ProjectId: projectId,
+      BuyerId: buyerId,
+      BuyerName: buyerFullName,
+      SellerId: project.sellerId,
+      Amount: project.Price,
+    };
+
+    // Save the purchase record to the database
+    const purchase = new PurchaseSchema(purchaseData);
+    await purchase.save();
+
+//////
     // Send notification to the seller
     const sellerNotification = {
       message: `${buyerFullName} has purchased your project "${project.Title}" for ${project.Price} RS.`,

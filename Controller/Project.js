@@ -2,12 +2,12 @@ const jwt = require('jsonwebtoken');
 const Customer = require('../models/Customer.schema');
 const Freelancer = require('../models/Freelance.schema');
 const Projects = require('../models/Projects.schema');
-
+const User = require('../models/Customer.schema');
 //CREATE PROJECT  
 const CreateProject = async (req, res) => {
     try {
         // Extracting data from the request body
-        const { Deadline, Title, Requirements, Description, Budget } = req.body;
+        const { Deadline, Title, Requirements, Description, Budget ,Keywords } = req.body;
 
         // Extracting Assigned from request query parameters
         const Assigned = req.query.Assigned;
@@ -53,6 +53,7 @@ const CreateProject = async (req, res) => {
             Requirements,
             Description,
             Budget,
+            Keywords,
             UserId,
             Username,
             Assigned,
@@ -81,6 +82,7 @@ const CreateProject = async (req, res) => {
                 Requirements: newProject.Requirements,
                 Description: newProject.Description,
                 Budget: newProject.Budget,
+                Keywords: newProject.Keywords,
                 UserId: newProject.UserId,
                 Username: newProject.Username,
                 Assigned: newProject.Assigned,
@@ -187,7 +189,7 @@ const FetchProjectById = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-// EDIT PROJECT BY ID
+// EDIT PROJECT BY ID edit only waiting for approval
 const EditProjectById = async (req, res) => {
     try {
         // Extracting project ID from request parameters
@@ -199,7 +201,7 @@ const EditProjectById = async (req, res) => {
 
         // Fetching the project by ID for the decoded userId
         const project = await Projects.findOne({ _id: projectId, UserId: decoded.userId });
-        
+
         // Check if the project exists
         if (!project) {
             return res.status(404).json({ message: 'Project not found for this user.' });
@@ -211,7 +213,7 @@ const EditProjectById = async (req, res) => {
         }
 
         // Extracting updated data from the request body
-        const { Deadline, Title, Requirements, Description, Budget } = req.body;
+        const { Deadline, Title, Requirements, Description, Budget, Keywords } = req.body;
 
         // Fetch user details
         const user = await Customer.findById(decoded.userId);
@@ -246,6 +248,12 @@ const EditProjectById = async (req, res) => {
         if (Requirements) project.Requirements = Requirements;
         if (Description) project.Description = Description;
 
+        // Updating Keywords field
+        if (Keywords && Array.isArray(Keywords)) {
+            // Assuming Keywords is an array, append new elements
+            project.Keywords.push(...Keywords);
+        }
+
         // Save the updated user and project
         await user.save();
         await project.save();
@@ -260,41 +268,64 @@ const EditProjectById = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-// DELETE PROJECT BY ID
+
+
+
+
 const DeleteProjectById = async (req, res) => {
     try {
-        // Extracting project ID from request parameters
-        const projectId = req.params.projectId;
+      // Extracting project ID from request parameters
+      const projectId = req.params.projectId;
+  
+      // Decoding token from the request header
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
+      // Fetching the project by ID for the decoded userId
+      const project = await Projects.findOne({ _id: projectId, UserId: decoded.userId });
+  
+      // Check if the project exists
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found for this user.' });
+      }
+  
 
-        // Decoding token from the request header
-        const token = req.headers.authorization.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // Check if the project status is 'REJECTED' or 'WAITING FOR APPROVAL'
+    if (project.Status !== 'REJECTED' && project.Status !== 'WAITING FOR APPROVAL') {
+    return res.status(403).json({ error: 'Only projects with status REJECTED or WAITING FOR APPROVAL can be deleted.' });
+    }
 
-        // Fetching the project by ID for the decoded userId
-        const project = await Projects.findOne({ _id: projectId, UserId: decoded.userId });
-
-        // Check if the project exists
-        if (!project) {
-            return res.status(404).json({ message: 'Project not found for this user.' });
+      // If the project status is 'WAITING FOR APPROVAL', update user account balance
+      if (project.Status === 'WAITING FOR APPROVAL') {
+        // Update user account balance and freeze balance
+        const user = await User.findById(decoded.userId);
+  
+        if (!user) {
+          return res.status(404).json({ message: 'User not found.' });
         }
-
-        // Check if the project status is 'REJECTED'
-        if (project.Status !== 'REJECTED') {
-            return res.status(403).json({ error: 'Only projects with status REJECTED can be deleted.' });
-        }
-
-        // Delete the project
-        await Projects.deleteOne({ _id: projectId });
-
-        // Return success response
-        res.status(200).json({
-            message: 'Project deleted successfully'
-        });
+  
+        user.AccountBalance += project.Budget;
+        user.FreezeBalance -= project.Budget;
+  
+        await user.save();
+      }
+  
+      // Delete the project
+      await Projects.deleteOne({ _id: projectId });
+  
+      // Return success response
+      res.status(200).json({
+        message: 'Project deleted successfully'
+      });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Server error' });
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
     }
 };
+  
+//////////////
+
+
 // FETCH DELIVERED PROJECTS
 const FetchDeliveredProjects = async (req, res) => {
     try {
@@ -354,3 +385,117 @@ const getAllSamplesProjectsOfFreelancerByID = async (req, res) => {
   };
 
 module.exports = { CreateProject, FetchUserAllProjects, FilterProjectsByStatus, FetchProjectById, EditProjectById, DeleteProjectById,FetchDeliveredProjects,getAllSamplesProjectsOfFreelancerByID };
+
+// DELETE PROJECT BY ID only delete rected project 
+// const DeleteProjectById = async (req, res) => {
+//     try {
+//         // Extracting project ID from request parameters
+//         const projectId = req.params.projectId;
+
+//         // Decoding token from the request header
+//         const token = req.headers.authorization.split(' ')[1];
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//         // Fetching the project by ID for the decoded userId
+//         const project = await Projects.findOne({ _id: projectId, UserId: decoded.userId });
+
+//         // Check if the project exists
+//         if (!project) {
+//             return res.status(404).json({ message: 'Project not found for this user.' });
+//         }
+
+//         // Check if the project status is 'REJECTED'
+//         if (project.Status !== 'REJECTED') {
+//             return res.status(403).json({ error: 'Only projects with status REJECTED can be deleted.' });
+//         }
+
+//         // Delete the project
+//         await Projects.deleteOne({ _id: projectId });
+
+//         // Return success response
+//         res.status(200).json({
+//             message: 'Project deleted successfully'
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: 'Server error' });
+//     }
+// };
+
+
+
+
+
+
+// const EditProjectById = async (req, res) => {
+//     try {
+//         // Extracting project ID from request parameters
+//         const projectId = req.params.projectId;
+
+//         // Decoding token from the request header
+//         const token = req.headers.authorization.split(' ')[1];
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//         // Fetching the project by ID for the decoded userId
+//         const project = await Projects.findOne({ _id: projectId, UserId: decoded.userId });
+        
+//         // Check if the project exists
+//         if (!project) {
+//             return res.status(404).json({ message: 'Project not found for this user.' });
+//         }
+
+//         // Check if the project status allows for editing
+//         if (project.Status !== "WAITING FOR APPROVAL") {
+//             return res.status(403).json({ error: 'Project cannot be edited as it is not in the WAITING FOR APPROVAL status.' });
+//         }
+
+//         // Extracting updated data from the request body
+//         const { Deadline, Title, Requirements, Description, Budget } = req.body;
+
+//         // Fetch user details
+//         const user = await Customer.findById(decoded.userId);
+//         if (!user) {
+//             return res.status(404).json({ error: 'User not found' });
+//         }
+
+//         // Logic for handling budget update and user balance
+//         const originalBudget = project.Budget;
+//         let tempBalance = 0;
+
+//         if (Budget) {
+//             if (Budget > originalBudget) {
+//                 tempBalance = Budget - originalBudget;
+//                 if (tempBalance > user.AccountBalance) {
+//                     return res.status(400).json({ error: 'Insufficient balance. Please top up.' });
+//                 } else {
+//                     user.AccountBalance -= tempBalance;
+//                     user.FreezeBalance += tempBalance;
+//                 }
+//             } else if (Budget < originalBudget) {
+//                 tempBalance = originalBudget - Budget;
+//                 user.AccountBalance += tempBalance;
+//                 user.FreezeBalance -= tempBalance;
+//             }
+//             project.Budget = Budget;
+//         }
+
+//         // Updating other project fields
+//         if (Deadline) project.Deadline = Deadline;
+//         if (Title) project.Title = Title;
+//         if (Requirements) project.Requirements = Requirements;
+//         if (Description) project.Description = Description;
+
+//         // Save the updated user and project
+//         await user.save();
+//         await project.save();
+
+//         // Return the updated project details in the JSON response
+//         res.status(200).json({
+//             message: 'Project updated successfully',
+//             project: project
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: 'Server error' });
+//     }
+// };

@@ -7,7 +7,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 router.post('/payment', async (req, res) => {
-  let status, error;
+  let status;
 
   // Initialize Stripe within the route handler
   const stripe = Stripe(process.env.Stripe_SECRET_KEY);
@@ -33,6 +33,7 @@ router.post('/payment', async (req, res) => {
       source: token.id,
       amount,
       currency: 'usd',
+      // currency:'pkr',
     });
 
     // Check if the charge was successful
@@ -55,7 +56,7 @@ router.post('/payment', async (req, res) => {
           //AccountBalance += netAmount;
           $push: {
             Notifications: {
-              message: `Payment of $${(netAmount).toFixed(2)} succeeded in your account.`,
+              message: `You have TOPUP ${(netAmount).toFixed(2)} RS.`,
               createdAt: new Date(),
             },
             TopupHistory: {

@@ -1,9 +1,11 @@
 const mongoose = require("mongoose")
 
-const userSchema = mongoose.Schema({
+const Purchase = mongoose.Schema({
     ProjectId:String,
-    UserId:String,// who has bought project
-
+    BuyerId:String,
+    BuyerName:String,
+    SellerId:String,
+    Amount: Number,
 },{timestamps:true})
-const model = mongoose.model("Purchases" , userSchema);
+const model = mongoose.model("Purchases" , Purchase);
 module.exports = model;

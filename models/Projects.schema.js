@@ -5,10 +5,8 @@ const responseSchema = mongoose.Schema({
   projectId: 
   {
     type: String,
-    unique: true, // Ensures uniqueness
+    unique: true, 
     default: () => {
-        // Generates a unique ID using a library like uuid or any other method
-        // Example using uuid:
         const uuid = require('uuid');
         return uuid.v4();}
   },  

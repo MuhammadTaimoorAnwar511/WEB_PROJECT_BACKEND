@@ -10,8 +10,9 @@ const Notifications =require('../Controller/Notification')
 const Chat=require('../Controller/Chat')
 const ReviewProject=require('../Controller/ReviewProject')
 const SellerProjectController = require('../Controller/Templates');
-const { processPayment } = require("../Controller/Stripe"); 
+////////////
 
+/////////
 // Register route
 router.post('/register', ClientController.register);
 // Login route
@@ -74,8 +75,7 @@ router.post('/buyproject/:projectId', SellerProjectController.buysellerProjectBy
 router.get('/buyerprojects', SellerProjectController.getBuyerProjects);
 // Get all sample projects of a specific freelancer by ID
 router.get('/freelancer/samples/:freelancerId', ProjectController.getAllSamplesProjectsOfFreelancerByID);
-
-
+//////////////////////////////////////////////////////////////
 
 
 module.exports = router;

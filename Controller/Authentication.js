@@ -56,7 +56,8 @@ exports.login = async (req, res) => {
 
         // Compare the provided password with the hashed password
         const isMatch = await bcrypt.compare(Password, user.Password);
-        if (!isMatch) {
+        if (!isMatch) 
+        {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
@@ -73,7 +74,9 @@ exports.login = async (req, res) => {
             role: user.Role,
             token: token
         });
-    } catch (error) {
+    }
+    catch (error) 
+    {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
     }
