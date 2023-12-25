@@ -269,9 +269,6 @@ const EditProjectById = async (req, res) => {
     }
 };
 
-
-
-
 const DeleteProjectById = async (req, res) => {
     try {
       // Extracting project ID from request parameters

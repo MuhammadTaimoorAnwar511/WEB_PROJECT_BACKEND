@@ -52,14 +52,16 @@ router.get('/getallPaymentHistory', Notifications.getPaymentHistory);
 //send messageto freelance
 router.post('/sendmessage/:receiverId', Chat.sendMessage);
 //send message TO SELLER
-router.post('/sendmessage-seller/:receiverId', Chat.sendMessage);
+// router.post('/sendmessage-seller/:receiverId', Chat.sendMessage);
+//get all message
+router.get('/getmessage/:receiverId', Chat.getMessages);
 // Rate Freelancer route
 router.post('/rate-freelancer/:freelancerId', ClientSearchController.rateFreelancer);
 // Search SELLER by Name route
 router.get('/search-seller', SellerSearchController.searchSeller);
 // Search ALL SELLER
 router.get('/search-allseller', SellerSearchController.searchAllSeller);
-//rate project
+//rate project of seller
 router.put("/addReview/:id", ReviewProject.addReviewById);
 //get all projects of all sellers
 router.get('/sellerallprojects', SellerProjectController.getallsellerprojects);

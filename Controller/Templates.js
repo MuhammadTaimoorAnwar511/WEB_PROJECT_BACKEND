@@ -117,7 +117,8 @@ const buysellerProjectById = async (req, res) => {
     }
 
     // Check if the buyer has already purchased the project
-    if (project.Buyer.includes(buyerId)) {
+    const isAlreadyPurchased = project.Buyer.some((buyer) => buyer.buyerId === buyerId);
+    if (isAlreadyPurchased) {
       return res.status(400).json({ message: 'Buyer has already purchased this project' });
     }
 
@@ -140,13 +141,13 @@ const buysellerProjectById = async (req, res) => {
     await seller.save();
 
     // Perform the purchase logic (you can update project, buyer details, etc.)
-    project.Buyer.push(buyerId);
+    const newBuyer = { buyerId, buyerName: buyerFullName };
+    project.Buyer.push(newBuyer);
     project.Sales += 1;
     project.Revenue += project.Price;
 
     // Save the updated project to the database
     const updatedProject = await project.save();
-//////
 
     // Create a new purchase record
     const purchaseData = {
@@ -161,7 +162,6 @@ const buysellerProjectById = async (req, res) => {
     const purchase = new PurchaseSchema(purchaseData);
     await purchase.save();
 
-//////
     // Send notification to the seller
     const sellerNotification = {
       message: `${buyerFullName} has purchased your project "${project.Title}" for ${project.Price} RS.`,
@@ -191,6 +191,7 @@ const buysellerProjectById = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
 //get all project customer has bought
 const getBuyerProjects = async (req, res) => {
   try {
@@ -198,9 +199,9 @@ const getBuyerProjects = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const buyerId = decoded.userId;
-    //console.log(buyerId);
+
     // Fetch projects that match the buyer ID
-    const buyerProjects = await SellerProjects.find({ 'Buyer': { $in: [buyerId] } });
+    const buyerProjects = await SellerProjects.find({ 'Buyer.buyerId': buyerId });
 
     // Check if there are no projects
     if (!buyerProjects || buyerProjects.length === 0) {
