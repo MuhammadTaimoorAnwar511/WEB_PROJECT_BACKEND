@@ -7,7 +7,8 @@ const User = require('../models/Customer.schema');
 const CreateProject = async (req, res) => {
     try {
         // Extracting data from the request body
-        const { Deadline, Title, Requirements, Description, Budget ,Keywords } = req.body;
+        const { Deadline, Title, Requirements, Description ,Keywords } = req.body;
+        const Budget = parseFloat(req.body.Budget);
 
         // Extracting Assigned from request query parameters
         const Assigned = req.query.Assigned;
@@ -27,9 +28,10 @@ const CreateProject = async (req, res) => {
         const Username = user.FullName;
 
         // Check if customer's account balance is sufficient
-        if (user.AccountBalance < Budget) {
-            return res.status(400).json({ error: 'Insufficient balance. Please top up.' });
+        if (isNaN(Budget) || Budget <= 0) {
+            return res.status(400).json({ error: 'Invalid Budget value' });
         }
+        
 
         // Find the assigned freelancer's username
         const assignedFreelancer = await Freelancer.findById(Assigned);
@@ -44,6 +46,17 @@ const CreateProject = async (req, res) => {
         // Update customer's balance
         user.AccountBalance -= Budget;
         user.FreezeBalance += Budget;
+
+            // Update buyer's PaymentHistory
+    const paymentHistoryEntry = {
+        message: `Amount ${Budget} RS  has been transfer from your account to freez account`,
+        createdAt: new Date(),
+      };
+      const buyerNotification = {
+        message: `Amount ${Budget} RS  has been transfer from your account to freez account`,
+      };
+      user.Notifications.push(buyerNotification);
+      user.PaymentHistory.push(paymentHistoryEntry);
         await user.save();
 
         // Create a new project
@@ -320,9 +333,6 @@ const DeleteProjectById = async (req, res) => {
     }
 };
   
-//////////////
-
-
 // FETCH DELIVERED PROJECTS
 const FetchDeliveredProjects = async (req, res) => {
     try {

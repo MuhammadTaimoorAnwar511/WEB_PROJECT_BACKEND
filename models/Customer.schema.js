@@ -10,11 +10,11 @@ const CustomerSchema = mongoose.Schema({
     Interests: [String],
     AccountBalance: {
         type: Number,
-        default: 0
+        default: 0.00
     },
     FreezeBalance: {
         type: Number,
-        default: 0
+        default: 0.00
     },
     //Notifications:[String],
     Notifications: [{

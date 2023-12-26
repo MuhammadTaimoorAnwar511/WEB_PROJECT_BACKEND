@@ -80,6 +80,29 @@ const searchFreelancers = async (req, res) => {
         res.status(500).send({ message: "Error occurred while searching for freelancers", error: error.message });
     }
 };
+const searchFreelancerById = async (req, res) => {
+    try {
+        const freelancerIdToSearch = req.query.freelancerId;
+
+        if (!freelancerIdToSearch) {
+            return res.status(400).send({ message: "Freelancer ID parameter is required" });
+        }
+
+        const freelancer = await Freelance.findById(freelancerIdToSearch);
+
+        if (!freelancer) {
+            return res.status(404).send({
+                message: `No freelancer found with the ID: ${freelancerIdToSearch}`
+            });
+        }
+
+        res.status(200).json({
+            freelancer
+        });
+    } catch (error) {
+        res.status(500).send({ message: "Error occurred while searching for the freelancer", error: error.message });
+    }
+};
 
 // Controller function to rate a freelancer
 const rateFreelancer = async (req, res) => {
@@ -137,4 +160,4 @@ const rateFreelancer = async (req, res) => {
 
 
 
-module.exports = { searchFreelancers, searchAllFreelancers, searchFreelancersBySpecialities, rateFreelancer };
+module.exports = { searchFreelancers, searchAllFreelancers, searchFreelancersBySpecialities, rateFreelancer,searchFreelancerById };

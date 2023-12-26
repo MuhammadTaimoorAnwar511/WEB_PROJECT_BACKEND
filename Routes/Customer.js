@@ -25,8 +25,10 @@ router.patch('/profile/update', ClientProfile.updateUserProfile);
 router.get('/search-freelancers', ClientSearchController.searchFreelancers);
 // Search all Freelancers
 router.get('/search-allfreelancers', ClientSearchController.searchAllFreelancers);
-// Search Freelancers by speciality
+// Search Freelancers by speciality or name
 router.get('/search-freelancers', ClientSearchController.searchFreelancersBySpecialities);
+//searchFreelancerById
+router.get('/search-freelancer-by-id', ClientSearchController.searchFreelancerById);
 // Top-up balance route
 //router.post('/topup-balance', Topup.topUpBalance);
 //Top-up History
